@@ -1,8 +1,43 @@
 import csv
 
-class MovieBipartitieGraph:
-    def __init__():
+class GenreNode:
+    def __init__(self, genre):
+        self.genre = genre
+        self.neighbors = []
+    
+    def add_neighbors(self, node):
+        self.neighbors.append(node)
 
+class MovieNode:
+    def __init__(self, movie_info):
+        self.title = movie_info["title"]
+        self.movie_info = movie_info
+
+class MovieAdjacencyBipartitieGraph:
+    def __init__(self, genre_set):
+        self.adjacency_list = []
+        self.genre_index = {}
+        self.vertices_count = 0
+    
+    def add_genre(self, genre):
+        self.adjacency_list.append(self.vertices_count)
+        self.genre_index[genre] = self.vertices_count
+        self.vertices_count = self.vertices_count + 1
+
+    def add_movie(self, movie_data):
+        # Find out which genre it is first then add it as a neighbor to the genre node
+        raise NotImplementedError
+    
+    def get_genre_index(self, genre):
+        index = self.genre_index.get(genre)
+        if index != None:
+            return index
+        
+        return None
+
+class MovieBestFirstSearch:
+    def __init__(self):
+        raise NotImplementedError
 
 def create_movie_data(file_location):
     movies_data_list = []
