@@ -66,5 +66,7 @@ def main():
 
     print(genre_set)
 
+    # Ask user for favorite genres, favorite movies, and smallest rating
+
 if __name__ == "__main__":
     main()

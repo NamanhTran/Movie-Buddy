@@ -1,4 +1,5 @@
 movies.csv
 movies_ratings.csv
 notes.txt
+api_key.cfg
 Pipfile.lock
