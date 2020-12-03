@@ -1,4 +1,5 @@
 import csv
+from movie_api import get_movie_genre, get_movie_info
 
 class GenreNode:
     def __init__(self, genre):
@@ -66,7 +67,7 @@ def main():
 
     print(genre_set)
 
-    # Ask user for favorite genres, favorite movies, and smallest rating
+    # Ask user for favorite genres, favorite movies, and lowest rating the user will tolorate
 
 if __name__ == "__main__":
     main()
