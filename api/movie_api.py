@@ -1,4 +1,4 @@
-import requests, configparser
+import requests, configparser, os
 
 def get_movie_genre(movie_name):
     movie_genre = []
@@ -22,13 +22,16 @@ def get_movie_genre(movie_name):
 
 # Grabs the first most relevant result even if there are other matches
 def get_movie_info(movie_name):
-    key = get_api_key("api_key.cfg")
+    key = get_api_key(os.path.join(os.path.dirname(__file__), 'api_key.cfg'))
 
     url = "https://api.themoviedb.org/3/search/movie"
     params = {"api_key": key, "query": movie_name}
 
     r = requests.get(url, params=params)
     movies = r.json()['results']
+
+    if len(movies) == 0:
+        return None
 
     print(movies[0]["original_title"])
     
@@ -38,5 +41,3 @@ def get_api_key(config_location):
     config = configparser.ConfigParser()
     config.read(config_location)
     return config["API"]["key"]
-
-print(get_movie_genre("Spongebob"))
