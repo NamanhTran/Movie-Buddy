@@ -6,7 +6,7 @@ def get_movie_genre(movie_name):
     movie_genre_ids = movie_info["genre_ids"]
 
     url = "https://api.themoviedb.org/3/genre/movie/list"
-    params = {"api_key": get_api_key("api_key.cfg")}
+    params = {"api_key": get_api_key(os.path.join(os.path.dirname(__file__), 'api_key.cfg'))}
 
     r = requests.get(url, params=params)
     all_genre_list = r.json()["genres"]
@@ -32,8 +32,6 @@ def get_movie_info(movie_name):
 
     if len(movies) == 0:
         return None
-
-    print(movies[0]["original_title"])
     
     return movies[0]
 

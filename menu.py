@@ -1,11 +1,12 @@
 from api.movie_api import get_movie_info
+from termcolor import cprint
 
 def get_user_genre(genre_set):
     user_genres = []
 
     while not validate_genres(genre_set, user_genres):
 
-        print("Please choose you favorite genre from the list: (ex: Action, Comedy, Family)")
+        cprint("Please choose you favorite genre from the list: (ex: Action, Comedy, Family)", attrs=['bold'])
 
         for index, genre in enumerate(genre_set):
             print(f"{index + 1}) {genre}")
@@ -28,7 +29,7 @@ def get_user_movie():
 
             user_movie = strip_list(user_movie.split(','))
         
-        return user_movie
+        return get_movie_info(user_movie)
     
     return None
 
@@ -39,7 +40,7 @@ def get_lowest_acceptable_rating():
         user_input = input("On a scale of 0-10, what is the lowest acceptable rating for a movie?: ")
 
         if not user_input.isnumeric():
-            print("Please enter a number")
+            cprint("Error: Please enter a number", "red", attrs=['bold'])
         
         else:
             acceptable_rating = int(user_input)
@@ -59,7 +60,7 @@ def validate_genres(genre_set, genre_list):
 
     for genre in genre_list:
         if genre not in genre_set:
-            print(f"{genre} is not one of the genre option. Please try again or check the spelling.")
+            cprint(f"Error: {genre} is not one of the genre option. Please try again or check the spelling.", "red", attrs=['bold'])
             return False
     
     return True

@@ -1,44 +1,46 @@
-import csv
+import csv, heapq
 from api.movie_api import get_movie_genre, get_movie_info
 from menu import get_user_genre, get_user_movie, get_lowest_acceptable_rating
 
-class GenreNode:
-    def __init__(self, genre):
-        self.genre = genre
-        self.neighbors = []
-    
-    def add_neighbors(self, node):
-        self.neighbors.append(node)
-
-class MovieNode:
-    def __init__(self, movie_info):
-        self.title = movie_info["title"]
-        self.movie_info = movie_info
-
 class MovieAdjacencyBipartitieGraph:
-    def __init__(self, genre_set):
+    def __init__(self):
         self.adjacency_list = []
-        self.genre_index = {}
+        self.node_dictionary = {}
+        self.index_dictionary = {}
         self.vertices_count = 0
     
+    # TODO: Need to push a list instead of the number
     def add_genre(self, genre):
-        self.adjacency_list.append(self.vertices_count)
-        self.genre_index[genre] = self.vertices_count
+        if self.get_node_index(genre) == None:
+            self.adjacency_list.append([])
+
+        self.node_dictionary[genre.strip()] = self.vertices_count
         self.vertices_count = self.vertices_count + 1
 
     def add_movie(self, movie_data):
-        # Find out which genre it is first then add it as a neighbor to the genre node
-        raise NotImplementedError
+        movie_genres = movie_data["genre"]
+
+        for genre in movie_genres:
+            genre_index = self.get_node_index(genre.strip())
+            self.adjacency_list[genre_index].append(movie_data)
+
+        return
     
-    def get_genre_index(self, genre):
-        index = self.genre_index.get(genre)
+    def get_node_index(self, key):
+        index = self.node_dictionary.get(key)
         if index != None:
             return index
         
         return None
 
 class MovieBestFirstSearch:
-    def __init__(self):
+    def __init__(self, graph, genres):
+        self.graph = graph
+        self.genres = genres
+        self.recommendations_queue = []
+        self.search()
+
+    def search():
         raise NotImplementedError
 
 def create_movie_data(file_location):
@@ -64,8 +66,20 @@ def get_unique_genres(movies_data):
     return genre_set
 
 def main():
-    movies_data_dict = create_movie_data("./datasets/movies.csv")
-    genre_set = get_unique_genres(movies_data_dict)
+    movies_data_list = create_movie_data("./datasets/movies.csv")
+    genre_set = get_unique_genres(movies_data_list)
+
+    movie_graph = MovieAdjacencyBipartitieGraph()
+
+    for genre in genre_set:
+        movie_graph.add_genre(genre)
+
+    print(movie_graph.node_dictionary)
+    
+    for movie in movies_data_list:
+        movie_graph.add_movie(movie)
+
+    #print(movie_graph.adjacency_list[4])
 
     print(genre_set)
 
