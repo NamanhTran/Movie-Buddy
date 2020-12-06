@@ -1,5 +1,6 @@
 from api.movie_api import get_movie_info
 from termcolor import cprint
+import time
 
 def get_user_genre(genre_set):
     user_genres = []
@@ -28,8 +29,8 @@ def get_user_movie():
             user_movie = input("Enter movie name(s) (ex: La La Land, The Dark Knight, We're the Millers): ")
 
             user_movie = strip_list(user_movie.split(','))
-        
-        return get_movie_info(user_movie)
+
+        return user_movie
     
     return None
 
@@ -41,11 +42,27 @@ def get_lowest_acceptable_rating():
 
         if not user_input.isnumeric():
             cprint("Error: Please enter a number", "red", attrs=['bold'])
+            time.sleep(1)
         
         else:
             acceptable_rating = int(user_input)
     
     return acceptable_rating
+
+def get_earliest_year():
+    year = -1
+
+    while year < 0 or year > 2020:
+        user_input = input("what is the earliest release year for a movie you would like to see?: ")
+
+        if not user_input.isnumeric():
+            cprint("Error: Please enter a number", "red", attrs=['bold'])
+            time.sleep(1)
+        
+        else:
+            year = int(user_input)
+    
+    return year
 
 def strip_list(string_list):
     stripped_list = []
@@ -60,7 +77,8 @@ def validate_genres(genre_set, genre_list):
 
     for genre in genre_list:
         if genre not in genre_set:
-            cprint(f"Error: {genre} is not one of the genre option. Please try again or check the spelling.", "red", attrs=['bold'])
+            cprint(f"\nError: {genre} is not one of the genre option. Please try again or check the spelling.\n", "red", attrs=['bold'])
+            time.sleep(3)
             return False
     
     return True
