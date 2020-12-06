@@ -7,10 +7,10 @@ def get_user_genre(genre_set):
 
     while not validate_genres(genre_set, user_genres):
 
-        cprint("Please choose you favorite genre from the list: (ex: Action, Comedy, Family)", attrs=['bold'])
+        cprint("Please choose your favorite genre from the list: (ex: Action, Comedy, Family)", attrs=['bold'])
 
         for index, genre in enumerate(genre_set):
-            print(f"{index + 1}) {genre}")
+            print(f"{genre}")
 
         user_genres = input("Enter Genre(s): ")
         user_genres = strip_list(user_genres.split(','))
@@ -21,12 +21,12 @@ def get_user_movie():
     user_input = None
 
     while user_input != "y" and user_input != "n":
-        user_input = input("(Optional) Would you like to enter movies that you liked in the past to recommend similar movies? (y/n): ")
+        user_input = input("\n(Optional) Would you like to enter movies that you liked in the past to recommend similar movies? (y/n): ")
 
     if user_input == 'y':
         user_movie = []
         while not validate_movie(user_movie):
-            user_movie = input("Enter movie name(s) (ex: La La Land, The Dark Knight, We're the Millers): ")
+            user_movie = input("\nEnter movie name(s) (ex: La La Land, The Dark Knight, We're the Millers): ")
 
             user_movie = strip_list(user_movie.split(','))
 
@@ -38,7 +38,7 @@ def get_lowest_acceptable_rating():
     acceptable_rating = -1
 
     while acceptable_rating < 0 or acceptable_rating > 10:
-        user_input = input("On a scale of 0-10, what is the lowest acceptable rating for a movie?: ")
+        user_input = input("\nOn a scale of 0-10, what is the lowest acceptable rating for a movie?: ")
 
         if not user_input.isnumeric():
             cprint("Error: Please enter a number", "red", attrs=['bold'])
@@ -53,16 +53,38 @@ def get_earliest_year():
     year = -1
 
     while year < 0 or year > 2020:
-        user_input = input("what is the earliest release year for a movie you would like to see?: ")
+        user_input = input("\nWhat is the earliest release year for a movie you would like to see?: ")
 
         if not user_input.isnumeric():
-            cprint("Error: Please enter a number", "red", attrs=['bold'])
+            cprint("Error: Please enter a number\n", "red", attrs=['bold'])
             time.sleep(1)
         
         else:
             year = int(user_input)
     
     return year
+
+def get_max_list_length():
+    length = 0
+
+    while length <= 0:
+        user_input = input("\nHow long would you like the recommend list to be?: ")
+
+        if not user_input.isnumeric():
+            cprint("Error: Please enter a number greater than 0\n", "red", attrs=['bold'])
+            time.sleep(1)
+        
+        else:
+            length = int(user_input)
+    
+    return length
+
+def display_reccomendation(movies, max=10):
+    for i in range(len(movies)):
+        if i == max:
+            break
+
+        print(movies[i][1].title)
 
 def strip_list(string_list):
     stripped_list = []

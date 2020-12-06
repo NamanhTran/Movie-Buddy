@@ -20,19 +20,28 @@ def get_movie_genre(movie_name):
     
     return movie_genre
 
-# Grabs the first most relevant result even if there are other matches
+# Returns movie information gathered from the TMDb's search API
 def get_movie_info(movie_name):
+    # Get the API key from the cfg file
     key = get_api_key(os.path.join(os.path.dirname(__file__), 'api_key.cfg'))
 
+    # Location of the API endpoint
     url = "https://api.themoviedb.org/3/search/movie"
+
+    # Set the parameters for our API key and the query term 
     params = {"api_key": key, "query": movie_name}
 
+    # Execute the get request to the API
     r = requests.get(url, params=params)
+
+    # Extract the results from the response
     movies = r.json()['results']
 
+    # If there are no matching movies return None
     if len(movies) == 0:
         return None
     
+    # Return the first relavent movie result in the results
     return movies[0]
 
 def get_api_key(config_location):

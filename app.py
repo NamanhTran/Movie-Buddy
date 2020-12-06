@@ -1,6 +1,6 @@
 import csv, heapq
 from api.movie_api import get_movie_genre, get_movie_info
-from menu import get_user_genre, get_user_movie, get_lowest_acceptable_rating, get_earliest_year
+from menu import get_user_genre, get_user_movie, get_lowest_acceptable_rating, get_earliest_year, display_reccomendation, get_max_list_length
 
 # Node that holds all relavent information about the movie
 class MovieNode:
@@ -59,13 +59,12 @@ class MovieBestFirstSearch:
         self.min_rating = min_rating
         self.recommendations_pirority_queue = set()
         self.min_year = min_year
+        self.visited_nodes = set()
         self.best_first_search()
         self.recommendations_pirority_queue = sorted(self.recommendations_pirority_queue, key=lambda x: x[0], reverse=True)
-        #print(self.recommendations_pirority_queue)
 
     def best_first_search(self):
         genre_indexes = []
-        visited_nodes = set()
 
         for genre in self.favorite_genres:
             genre_indexes.append(self.graph.get_node_index(genre))
@@ -74,28 +73,29 @@ class MovieBestFirstSearch:
             movie_list = self.graph.adjacency_list[genre_index]
             for movie in movie_list:
                 if movie.rating >= self.min_rating and movie.year >= self.min_year:
-                    if movie.title in visited_nodes:
-                        # TODO Increase the weight of the node by 1 since it shares two genres that the user liked
+                    if movie in self.visited_nodes:
                         self.recommendations_pirority_queue.remove((movie.weight, movie))
-                        movie.weight = movie.weight + 1
+                        movie.weight = movie.weight + len(self.favorite_genres)
                         self.recommendations_pirority_queue.add((movie.weight, movie))
-                        print(movie, movie.weight)
-                        #print(f"Need to increase weight of {movie.title}")
 
                     else:
                         self.calculate_movie_weight(movie)
                         self.recommendations_pirority_queue.add((movie.weight, movie))
-                        visited_nodes.add(movie.title)
-                        print(movie.title, movie.weight, movie.rating, movie.genres, self.favorite_genres)
+                        self.visited_nodes.add(movie)
 
         return
     
     def calculate_movie_weight(self, movie):
+        if movie in self.visited_nodes:
+            self.recommendations_pirority_queue.remove((movie.weight, movie))
+            movie.weight = movie.weight + len(self.favorite_genres)
+            return
+
         for genre in movie.genres:
             if genre in self.favorite_genres:
                 movie.weight = movie.rating
 
-        return -1
+        return
 
 def create_movie_data(file_location):
     movies_data_list = []
@@ -131,18 +131,13 @@ def main():
 
     for genre in genre_set:
         movie_graph.add_genre(genre)
-
-    #print(movie_graph.node_dictionary)
     
     for movie in movies_data_list:
         movie_graph.add_movie(movie)
 
-    #print(genre_set)
-
     print("Welcome to Movie Buddy!")
 
     user_genre = get_user_genre(genre_set)
-    #print(user_genre)
 
     user_movie = get_user_movie()
     if user_movie != None:
@@ -153,21 +148,20 @@ def main():
             movie_genre = get_movie_genre(movie)
             if movie_genre != None:
                 for genre in movie_genre:
-                    if genre not in user_genre:
+                    if genre not in user_genre and genre != "Documentary" and genre != "TV Movie":
                         user_genre.append(genre)
     
     #print(user_genre)
 
     acceptable_rating = get_lowest_acceptable_rating()
-    #print(acceptable_rating)
 
     earliest_year = get_earliest_year()
-    #print(earliest_year)
+
+    max_length = get_max_list_length()
 
     best_first_search = MovieBestFirstSearch(movie_graph, user_genre, user_movie, acceptable_rating, earliest_year)
 
-    for i in range(75):
-        print(list(best_first_search.recommendations_pirority_queue)[i][1].title)
+    display_reccomendation(list(best_first_search.recommendations_pirority_queue), max_length)
 
 if __name__ == "__main__":
     main()
