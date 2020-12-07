@@ -97,26 +97,38 @@ class MovieBestFirstSearch:
 
         return
 
+# Opens the data set CSV file and puts 
 def create_movie_data(file_location):
+    # List of movies dictionaries
     movies_data_list = []
 
+    # Opens the csv file
     with open(file_location, 'r', encoding="utf8") as movies_csv:
+        # Create the csv reader object
         csv_reader = csv.reader(movies_csv, delimiter=',')
+
+        # Skip the first row since it just the info header
         next(csv_reader)
 
-        for movie in csv_reader:
-            critic_reviews = movie[21]
+        # Go through every movie and take the title, year, genre, description, and rating
+        for row in csv_reader:
+            # Get the critic reviews so we can filter "indie" movies (most of the time they're not that great)
+            critic_reviews = row[21]
             critic_reviews = 0 if critic_reviews == '' else int(critic_reviews)
 
-            if "USA" in set(movie[7].split(', ')) and int(critic_reviews) > 20:
-                movies_data_list.append({"title": movie[2], "year": movie[3], "genre": movie[5].split(', '), "description": movie[13], "rating": movie[14]})
+            # If the movie was released in USA and has more than 20 critic reviews then add it to the list
+            if "USA" in set(row[7].split(', ')) and int(critic_reviews) > 20:
+                movies_data_list.append({"title": row[2], "year": row[3], "genre": row[5].split(', '), "description": row[13], "rating": row[14]})
     
     return movies_data_list
 
+# Returns a set of genres given a list of movies info
 def get_unique_genres(movies_data):
     genre_set = set()
 
+    # Loops through the entire movies list
     for movie_data in movies_data:
+        # Loop through all genre in the movie 
         for genre in movie_data["genre"]:
             if genre not in genre_set:
                 genre_set.add(genre.strip())
