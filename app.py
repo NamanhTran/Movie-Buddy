@@ -27,19 +27,36 @@ class MovieAdjacencyBipartiteGraph:
     
     # Adds genre to the graph
     def add_genre(self, genre):
-        if self.get_node_index(genre) == None:
-            self.adjacency_list.append([])
+        # If the genre has been inserted yet then return since there can be only one 
+        # instance of a genre in the graph
+        if self.get_node_index(genre) != None:
+            return
 
+        # Add the genre to the graph
+        self.adjacency_list.append([])
+
+        # Pair the genre name with the index it is located at
         self.node_dictionary[genre.strip()] = self.vertices_count
+
+        # Increase the vertices count for the next genre to be added
         self.vertices_count = self.vertices_count + 1
+
+        return
 
     # Adds a movie to the graph
     def add_movie(self, movie_data):
+        # Create the movie node from the movie data
         movie_node = MovieNode(movie_data)
+
+        # Get the genre related to the movie
         movie_genres = movie_node.genres
 
+        # Add the movie to the genre's adjacency list
         for genre in movie_genres:
+            # Get the index location of the genre
             genre_index = self.get_node_index(genre.strip())
+
+            # Add the movie node to the adjacency list
             self.adjacency_list[genre_index].append(movie_node)
 
         return
@@ -63,24 +80,42 @@ class MovieBestFirstSearch:
         self.best_first_search()
         self.recommendations_pirority_queue = sorted(self.recommendations_pirority_queue, key=lambda x: x[0], reverse=True)
 
+    # Perform best first search on the graph
     def best_first_search(self):
         genre_indexes = []
 
+        # Get the genre index for the user's favoirte generes
         for genre in self.favorite_genres:
             genre_indexes.append(self.graph.get_node_index(genre))
         
+        # Loops through the genres indexes 
         for genre_index in genre_indexes:
+            # Get the list of movies for the genre
             movie_list = self.graph.adjacency_list[genre_index]
+
+            # Loops through the movie list and filters out nodes that to not align with the user's input
             for movie in movie_list:
+                # Only consider nodes that meet the min rating, min movie year
                 if movie.rating >= self.min_rating and movie.year >= self.min_year:
+                    # If the movie node is a repeated node then we increase the weight of the node by 2
                     if movie in self.visited_nodes:
+                        # Remove the node from the set
                         self.recommendations_pirority_queue.remove((movie.weight, movie))
-                        movie.weight = movie.weight + len(self.favorite_genres)
+
+                        # Add 2 to the weight of the node
+                        movie.weight = movie.weight + 2
+
+                        # Re-add the node back into the set
                         self.recommendations_pirority_queue.add((movie.weight, movie))
 
                     else:
+                        # Calculate the weight of the movie node
                         self.calculate_movie_weight(movie)
+
+                        # Add the node to the pq set
                         self.recommendations_pirority_queue.add((movie.weight, movie))
+
+                        # Add the node to the visted node
                         self.visited_nodes.add(movie)
 
         return
